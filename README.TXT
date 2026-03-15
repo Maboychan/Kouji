@@ -18,8 +18,10 @@ Documents/
  └ dev/
     └ Kouji/
        ├ TempGraph.py      (本プログラム)
-       ├ background.png    (グラフの背景画像：必須)
-       └ temp_data/        (自動生成：データ、ログ、画像が保存されます)
+       └ background.png    (グラフの背景画像：必須)
+       
+This iPad（Pythonista 3のルート）
+ └ temp_data/              (自動生成：データ、ログ、画像が保存されます)
 
 ## 🚀 使い方
 ### A. 共有シートから（推奨）
