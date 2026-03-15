@@ -112,7 +112,7 @@ def show_preview(ui_img):
     # 3. 画面に表示 (popoverだとiPadで小さく表示、sheetだと下から出てきます)
     v.present('sheet', hide_title_bar=True)
     
-    # 4. 1.0秒後に閉じる
+    # 4. 2.0秒後に閉じる
     ui.delay(v.close, 2.0)
 #-------------------------------------------------------------------------------------------
 
@@ -221,7 +221,7 @@ def main():
         APPEX = True
         text = appex.get_text()
         LINES = get_temp_data(text)
-        log(f'{FILE_PATH}に追加しました。')
+        log(f'📤 {"/".join(FILE_PATH.parts[-4:])}に追加しました。')
         append_data(LINES)
     elif clip:
         LINES = get_temp_data(clip)
@@ -230,7 +230,7 @@ def main():
             message = "クリップボードに温度データがあります。\nファイルに追加しますか?"
             y, n = 'はい', 'いいえ'
             if dialogs.alert(title, message, y, n, hide_cancel_button=True) == 1:
-                log(f'{FILE_PATH}に追加しました。')
+                log(f'📋 {"/".join(FILE_PATH.parts[-4:])}に追加しました。')
                 append_data(LINES)
                 
     # グラフ描画、保存、クリップボードにコピー
@@ -238,7 +238,6 @@ def main():
     if not im: return
     W, H = im.size
     
-    log(f"{type(FILE_PATH)}{FILE_PATH}")
     im.save(FILE_PATH.with_stem(FILE_PATH.stem + "_graph").with_suffix(".png"))
     
     with NamedTemporaryFile(suffix='.png', delete=True) as tmp:
