@@ -1,6 +1,5 @@
 # --- Local Test Files ---
 test.py
-temp_*.py
 
 # --- Python ---
 __pycache__/

@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
 from tempfile import NamedTemporaryFile
 import appex, clipboard, dialogs, io, os, ui
 
@@ -177,6 +177,41 @@ def make_graph(file_path=""):
     return im
 #-------------------------------------------------------------------------------------------
 
+def  background_image():
+    W, H = 648, 480
+    day_width = W // 2
+    hour_width = day_width // 24
+    temp_30 = int(H - (H / 25) * 5)
+    temp_40 = int(H - (H / 25) * 15)
+    colors = [(80, 192, 168, 255), (255, 192, 0, 255)]
+    gold_line_width = 120
+    blur_radius = 40
+    effect_ratio = 0.3
+    # gold line
+    line_img = Image.new('L', (W, H), 0)
+    dr = ImageDraw.Draw(line_img)
+    XY = [(0, temp_30), (day_width - hour_width,temp_30), (day_width + hour_width, temp_40), (W,temp_40)]
+    dr.line(XY, 255, gold_line_width, joint="curve")
+    # blur
+    blur_img = line_img.filter(ImageFilter.GaussianBlur(blur_radius))
+    blur_img = blur_img.point(lambda x: int(x * effect_ratio))
+    blur_img = blur_img.convert('RGBA')
+    # gradation
+    gradation_line_img = Image.new('RGB', (5, 1), (0, 0, 0))
+    rgb = []
+    for x in range(gradation_line_img.size[0]):
+        ratio = x / (gradation_line_img.size[0] - 1)
+        for i in range(3):
+            rgb.append(int((colors[0][i] * (1 - ratio) + colors[1][i] * ratio)))
+        gradation_line_img.putpixel((x,0),tuple(rgb))
+        rgb =[]
+    gradation_img = gradation_line_img.resize((W,H))
+    gradation_img = gradation_img.convert('RGBA')
+    # blend
+    img = ImageChops.add(gradation_img, blur_img)
+    return img
+#-------------------------------------------------------------------------------------------
+
 def base_graph(W=648, H=480, bg_file_name='background.png'):
     # 折れ線グラフのバックグラウンド画像を返す。
     DAYS = W // 324
@@ -204,9 +239,11 @@ def base_graph(W=648, H=480, bg_file_name='background.png'):
         dr.line((x, 0, x, H), grid_color)
         dr.text((x if x < W else x - 12, H - 10), str((i + 1) * 12), text_color)
     # グラフサイズに合わせて背景画像を引き伸ばしグリッドラインを重ねる。
-# bg_file_nameが存在しない場合の処理が必要
-# 背景画像のリサイズを修正
-    bg = Image.open(bg_file_name).resize((W // DAYS * 2,H))
+    if Path(bg_file_name).is_file():
+        bg = Image.open(bg_file_name).resize((W // DAYS * 2,H))
+    else:
+        # 背景画像がなければ作る
+        bg = background_image()
     w, h = bg.size
     cr = bg.crop((w - 1, 0, w, h))
     cr = cr.resize(im.size)
