@@ -48,7 +48,7 @@ YYYY-MM-DD HH:MM 温度 [コメント]
 ※コメントに「0️⃣」を入れると、その日の日付で新しい .temp ファイルが作成されます。
 
 サンプルグラフ
-<img width="240" alt="sample graph" title="sample graph" src="background.png">
+<img width="240" alt="sample graph" title="sample graph" src="background1.png">
 
 ## 🛠 メンテナンス情報
 - ログは `temp_data/log.txt` に出力されます。
