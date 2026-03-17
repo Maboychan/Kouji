@@ -232,7 +232,7 @@ def base_graph(W=648, H=480, bg_file_name='background.png'):
     hour = 2
     for i in range(int(DAYS / (hour / 24))):
         x = int(i * (W / DAYS / 24) * hour)
-        dr.line((x, 0, x, H),(0, 0, 255, 64) if x != 0 else grid_color)
+        dr.line((x, 0, x, H), grid_sub_color if x != 0 else grid_color)
     hour = 12
     for i in range(int(DAYS / (hour / 24))):
         x = int((i + 1) * (W / DAYS / 24) * hour)
@@ -259,9 +259,17 @@ def main():
     if appex.is_running_extension():
         APPEX = True
         text = appex.get_text()
-        LINES = get_temp_data(text)
-        log(f'📤 {"/".join(FILE_PATH.parts[-4:])}に追加しました。')
-        append_data(LINES)
+        images = appex.get_images()
+        if text:
+            LINES = get_temp_data(text)
+            log(f'📤 {"/".join(FILE_PATH.parts[-4:])}に追加しました。')
+            append_data(LINES)
+        elif images:
+            for i, img in enumerate(images):
+                save_name = FILE_PATH.with_stem(FILE_PATH.stem + f"_haze_{i}").with_suffix(".png")
+                img.save(save_name)
+                log(f'🖼 {"/".join(save_name.parts[-4:])}に保存しました。')
+                
     elif clip:
         LINES = get_temp_data(clip)
         if LINES:
